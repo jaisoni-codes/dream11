@@ -5,6 +5,16 @@ import pandas as pd
 import time
 import os
 
+import math
+def clean_nans(obj):
+    if isinstance(obj, dict):
+        return {k: clean_nans(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [clean_nans(v) for v in obj]
+    elif isinstance(obj, float) and math.isnan(obj):
+        return None
+    return obj
+
 from src.inference.pipeline import PreTossInferencePipeline
 from src.inference.genai_explainer import GroundedGenAIExplainer
 
@@ -52,11 +62,11 @@ def predict(req: PredictionRequest):
         # Clean up dataframes for JSON serialization
         dream_team['team_df'] = dream_team['team_df'].to_dict(orient='records')
         
-        return {
+        return clean_nans({
             "success": True,
             "dream_team": dream_team,
             "latencies": latencies
-        }
+        })
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
