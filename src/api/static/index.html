@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream11 Team Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #C51D23;
+            --bg-dark: #121212;
+            --bg-card: #1E1E1E;
+            --text-light: #FFFFFF;
+            --text-dim: #A0A0A0;
+            --pitch-grad: linear-gradient(180deg, #2E7D32 0%, #1B5E20 100%);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding-bottom: 50px;
+        }
+        
+        .header {
+            background-color: var(--primary);
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(197, 29, 35, 0.4);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .controls-card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #333;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        select, input[type="date"] {
+            background-color: #2A2A2A;
+            border: 1px solid #444;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(197, 29, 35, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(197, 29, 35, 0.3);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .btn:hover { background-color: #a8171d; }
+        .btn:disabled { background-color: #555; cursor: not-allowed; }
+        
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+            font-size: 16px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .results { display: none; }
+        
+        .kpi-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .kpi-card {
+            flex: 1;
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        
+        .kpi-val { font-size: 24px; font-weight: 800; }
+        .kpi-lbl { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-top: 4px; }
+        .text-green { color: #4CAF50; }
+        .text-yellow { color: #FFC107; }
+        .text-blue { color: #03A9F4; }
+        
+        .pitch {
+            background: var(--pitch-grad);
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pitch::before {
+            content: ''; position: absolute; top: 10%; left: 10%; right: 10%; bottom: 10%;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; pointer-events: none;
+        }
+        
+        .role-section { margin-bottom: 20px; }
+        .role-title {
+            text-align: center; color: rgba(255,255,255,0.8); font-size: 12px;
+            font-weight: 700; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;
+        }
+        
+        .player-grid {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+        }
+        
+        .player-card {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 10px;
+            width: calc(25% - 10px);
+            min-width: 140px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .player-card.captain { border-top: 4px solid #FFC107; background: rgba(30, 25, 0, 0.8); }
+        .player-card.vice-captain { border-top: 4px solid #03A9F4; background: rgba(0, 20, 30, 0.8); }
+        
+        .p-name { font-weight: 700; font-size: 14px; margin: 8px 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-team { font-size: 10px; color: #aaa; margin-bottom: 6px; }
+        
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; color: #000; }
+        .badge-c { background-color: #FFC107; }
+        .badge-vc { background-color: #03A9F4; }
+        
+        .stats-row { display: flex; justify-content: space-between; font-size: 11px; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px; }
+        
+        .xai-box {
+            background-color: var(--bg-card);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .xai-box h4 { margin-bottom: 10px; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="header">DREAM11 AI PREDICTOR</div>
+
+<div class="container">
+    <div class="controls-card">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Match Date</label>
+                <input type="date" id="matchDate" value="2024-07-01">
+            </div>
+            <div class="form-group">
+                <label>Team 1</label>
+                <select id="team1"></select>
+            </div>
+            <div class="form-group">
+                <label>Team 2</label>
+                <select id="team2"></select>
+            </div>
+        </div>
+        
+        <div class="toggle-row">
+            <input type="checkbox" id="useGenai" style="width: 18px; height: 18px;">
+            <label for="useGenai" style="margin: 0; font-size: 14px; color: white; cursor: pointer;">
+                🧠 Explain with AI (Natural Language)
+            </label>
+        </div>
+        
+        <button class="btn" id="predictBtn">Build Optimal Team Now</button>
+    </div>
+    
+    <div class="loader" id="loader">Running ML Models & Optimizer... Please wait.</div>
+    
+    <div class="results" id="results">
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-val text-green" id="kpiFP">0</div>
+                <div class="kpi-lbl">Expected Team FP</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-val text-yellow" id="kpiC">-</div>
+                <div class="kpi-lbl">Captain (2x)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-val text-blue" id="kpiVC">-</div>
+                <div class="kpi-lbl">Vice Captain (1.5x)</div>
+            </div>
+        </div>
+        
+        <div class="pitch" id="pitch">
+            <!-- Rendered via JS -->
+        </div>
+        
+        <div class="xai-box" id="xaiBox" style="display:none;">
+            <h4>🧠 AI Explanations</h4>
+            <div id="xaiContent"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const team1Select = document.getElementById('team1');
+    const team2Select = document.getElementById('team2');
+    const predictBtn = document.getElementById('predictBtn');
+    const loader = document.getElementById('loader');
+    const results = document.getElementById('results');
+    
+    // Fetch teams
+    fetch('/api/teams').then(r => r.json()).then(data => {
+        data.teams.forEach(t => {
+            team1Select.add(new Option(t, t));
+            team2Select.add(new Option(t, t));
+        });
+        team1Select.value = "India" || data.teams[0];
+        team2Select.value = "Australia" || data.teams[1];
+    });
+    
+    predictBtn.addEventListener('click', async () => {
+        predictBtn.disabled = true;
+        loader.style.display = 'block';
+        results.style.display = 'none';
+        
+        const payload = {
+            target_date: document.getElementById('matchDate').value,
+            team_a: team1Select.value,
+            team_b: team2Select.value,
+            use_genai: document.getElementById('useGenai').checked
+        };
+        
+        try {
+            const res = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                renderResults(data.dream_team, payload.team_a, payload.team_b);
+            } else {
+                alert("Error: " + data.detail);
+            }
+        } catch (e) {
+            alert("Prediction failed.");
+        }
+        
+        loader.style.display = 'none';
+        predictBtn.disabled = false;
+    });
+    
+    function renderResults(dream_team, team_a, team_b) {
+        document.getElementById('kpiFP').innerText = dream_team.total_predicted_score.toFixed(1);
+        document.getElementById('kpiC').innerText = dream_team.captain;
+        document.getElementById('kpiVC').innerText = dream_team.vice_captain;
+        
+        const pitch = document.getElementById('pitch');
+        pitch.innerHTML = '';
+        
+        const roles = [
+            { code: 'WK', name: 'Wicket-Keepers' },
+            { code: 'BAT', name: 'Batsmen' },
+            { code: 'AR', name: 'All-Rounders' },
+            { code: 'BOWL', name: 'Bowlers' }
+        ];
+        
+        const players = dream_team.team_df;
+        const explanations = {};
+        dream_team.explanations.forEach(e => explanations[e.player] = e);
+        
+        roles.forEach(r => {
+            const rPlayers = players.filter(p => p.role === r.code);
+            if (rPlayers.length === 0) return;
+            
+            const sec = document.createElement('div');
+            sec.className = 'role-section';
+            sec.innerHTML = `<div class="role-title">${r.name} (${rPlayers.length})</div><div class="player-grid"></div>`;
+            
+            const grid = sec.querySelector('.player-grid');
+            
+            rPlayers.forEach(p => {
+                const isC = p.player === dream_team.captain;
+                const isVC = p.player === dream_team.vice_captain;
+                let cls = 'player-card';
+                if (isC) cls += ' captain';
+                if (isVC) cls += ' vice-captain';
+                
+                const badge = isC ? '<div class="badge badge-c">C</div>' : (isVC ? '<div class="badge badge-vc">VC</div>' : '');
+                const exp = explanations[p.player];
+                
+                grid.innerHTML += `
+                    <div class="${cls}">
+                        ${badge}
+                        <div class="p-name">${p.player}</div>
+                        <div class="p-team" style="color: ${exp.team===team_a ? '#ffbaba' : '#baddff'}">${exp.team}</div>
+                        <div class="stats-row">
+                            <span>P: ${(exp.p_play*100).toFixed(0)}%</span>
+                            <span style="color:#fff; font-weight:bold;">${exp.expected_fp.toFixed(1)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            pitch.appendChild(sec);
+        });
+        
+        // Render XAI
+        const xaiBox = document.getElementById('xaiBox');
+        const xaiContent = document.getElementById('xaiContent');
+        xaiBox.style.display = 'block';
+        xaiContent.innerHTML = '';
+        
+        players.forEach(p => {
+            const div = document.createElement('div');
+            div.style.marginBottom = '10px';
+            div.style.paddingBottom = '10px';
+            div.style.borderBottom = '1px solid #333';
+            
+            let html = `<strong>${p.player}</strong>: `;
+            if (dream_team.genai_explanations && dream_team.genai_explanations[p.player]) {
+                html += dream_team.genai_explanations[p.player];
+            } else {
+                html += explanations[p.player].human_readable_explanation;
+            }
+            div.innerHTML = html;
+            xaiContent.appendChild(div);
+        });
+        
+        results.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
