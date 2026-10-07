@@ -4,6 +4,113 @@ import textwrap
 from src.ui.utils import run_prediction, load_data
 
 def render_product_page():
+
+    st.markdown('''
+    <style>
+        /* Dream11 Red Header */
+        .main-header {
+            background-color: #C51D23;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* Pitch Container */
+        .pitch-container {
+            background: linear-gradient(180deg, #4CAF50 0%, #2E7D32 100%);
+            border: 2px solid #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .pitch-header {
+            color: white;
+            text-align: center;
+            font-weight: 800;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+        
+        /* Player Cards */
+        .player-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            border-left: 5px solid #C51D23;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .player-card.captain {
+            border-left: 5px solid #FFC107;
+            background-color: #FFFDE7;
+        }
+        
+        .player-card.vice-captain {
+            border-left: 5px solid #03A9F4;
+            background-color: #E1F5FE;
+        }
+        
+        .badge-role {
+            font-size: 10px;
+            background-color: #eee;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .badge-c, .badge-vc {
+            font-size: 10px;
+            font-weight: 800;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        .badge-c { background-color: #FFC107; color: #000; }
+        .badge-vc { background-color: #03A9F4; }
+        
+        .badge-pts {
+            font-weight: 800;
+            color: #C51D23;
+            font-size: 12px;
+        }
+        
+        /* KPI Cards */
+        .kpi-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+        .kpi-val {
+            font-size: 24px;
+            font-weight: 800;
+        }
+        .kpi-lbl {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    </style>
+    ''', unsafe_allow_html=True)
     st.markdown('<div class="main-header">🎯 Pre-Toss Match Predictor</div>', unsafe_allow_html=True)
     st.markdown("Select a match to predict the Dream11 Best XI and C/VC. This prediction uses strictly pre-toss features.")
     
