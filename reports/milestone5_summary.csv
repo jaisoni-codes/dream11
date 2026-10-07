@@ -1,0 +1,2 @@
+Total Evaluation Matches,Evaluated,Skipped,Mean Overlap,Median Overlap,Mean Recall@11,Mean Jaccard,Mean Predicted Base Points,Mean Actual Points of Predicted XI,Mean Actual Dream XI Points,Mean Team Regret,Median Team Regret,Captain Accuracy,VC Accuracy,Pred Latency (s),Opt Latency (s),Total Latency (s)
+2282,192,2090,2.59375,2.5,0.2357954545454545,0.14015521596065328,469.45545116950206,192.54166666666666,657.2291666666666,464.6875,461.0,0.057291666666666664,0.020833333333333332,0.027203543466112392,0.4190409730692379,3.862495571374893

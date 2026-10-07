@@ -1,0 +1,44 @@
+t20:
+  batting:
+    run: 1
+    boundary_bonus: 1
+    six_bonus: 2
+    thirty_run_bonus: 4
+    fifty_run_bonus: 8
+    hundred_run_bonus: 16
+    duck_penalty: -2  # Only applies to non-bowlers (handled in code)
+  
+  bowling:
+    wicket: 25        # Excludes run-out
+    lbw_bowled_bonus: 8
+    four_wicket_bonus: 8
+    five_wicket_bonus: 16
+    maiden_over: 12
+    
+  fielding:
+    catch: 8
+    three_catch_bonus: 4
+    stumping: 12
+    run_out_direct: 12
+    run_out_indirect: 6
+
+  economy:
+    # Requires >= 2 overs
+    below_5: 6
+    between_5_and_5_99: 4
+    between_6_and_7: 2
+    between_10_and_11: -2
+    between_11_and_12: -4
+    above_12: -6
+
+  strike_rate:
+    # Requires >= 10 balls faced, not applicable to pure bowlers (handled in code)
+    above_170: 6
+    between_150_and_170: 4
+    between_130_and_150: 2
+    between_60_and_70: -2
+    between_50_and_59_99: -4
+    below_50: -6
+
+  playing_xi:
+    played: 4

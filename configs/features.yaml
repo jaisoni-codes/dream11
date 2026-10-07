@@ -1,0 +1,23 @@
+rolling_windows: [1, 3, 5, 10, 20]
+ewma_spans:
+  short: 5
+  medium: 10
+  long: 20
+
+columns_to_roll:
+  - runs
+  - balls
+  - fours
+  - sixes
+  - sr
+  - bat_pts
+  - runs_conceded
+  - balls_bowled
+  - wickets
+  - econ
+  - bowl_pts
+  - catches
+  - stumpings
+  - runouts
+  - field_pts
+  - fantasy_points
