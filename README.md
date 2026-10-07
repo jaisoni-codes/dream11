@@ -54,3 +54,11 @@ streamlit run src/ui/app.py
 - **Model UI**: View canonical holdout evaluation metrics, SHAP global feature importances, and the system architecture.
 - **Demo Mode**: The interface pre-loads a historical holdout match (2024-07-01, Malawi vs Kenya) as a valid demo out of the box.
 
+
+## 11. Architecture Boundaries (M11)
+- **ML is the Prediction Engine**: Generates `E[FP | play]` and `P(play)` using strictly pre-toss features via LightGBM.
+- **ILP is the Decision Engine**: Solves for the optimal XI maximizing Expected FP subject to structural constraints.
+- **SHAP is the Explanation Engine**: Mathematical additive explanations directly off the trees.
+- **GenAI is the Language Layer**: Operates *strictly* in the UI layer. Only translates SHAP JSON into natural language. It cannot modify predictions, features, or team selections. A deterministic M8 SHAP fallback exists.
+- **M10 Features (Opponent/Venue)**: Thoroughly evaluated and intentionally DROPPED from production due to negligible downstream improvements and high computational cost.
+- **API Configuration**: Set `GEMINI_API_KEY` for GenAI. If missing, it gracefully degrades to deterministic text.

@@ -25,11 +25,12 @@ def render_product_page():
         
     st.markdown("---")
     
+    use_genai = st.toggle("🧠 Explain with AI (Natural Language)", value=False)
     if st.button("🚀 Run Pre-Toss Prediction", type="primary"):
         with st.spinner("Generating prediction and explanations..."):
             try:
                 pool, dream_team, latencies = run_prediction(
-                    str(date_input), team_a, team_b, explain=True
+                    str(date_input), team_a, team_b, explain=True, use_genai=use_genai
                 )
                 
                 st.markdown("### 🏆 Recommended Dream11 Best XI")
@@ -89,21 +90,24 @@ def render_product_page():
                             
                             col = cols[idx % len(cols)]
                             col.markdown(card_html, unsafe_allow_html=True)
-                            
-                            with col.expander("🔍 Why? (SHAP)"):
-                                st.caption(exp.get('human_readable_explanation', ''))
-                                
-                                st.markdown("**FP Model Factors**")
-                                for f in exp.get('top_positive_fp_factors', [])[:2]:
-                                    st.caption(f"🟢 `{f['feature']}`: +{f['contribution']:.1f}")
-                                for f in exp.get('top_negative_fp_factors', [])[:2]:
-                                    st.caption(f"🔴 `{f['feature']}`: {f['contribution']:.1f}")
+                            with col.expander("🧠 Why? (AI / SHAP)"):
+                                if 'genai_explanations' in dream_team and player in dream_team['genai_explanations']:
+                                    st.markdown(dream_team['genai_explanations'][player])
+                                else:
+                                    st.caption(exp.get('human_readable_explanation', ''))
                                     
-                                st.markdown("**P(play) Factors**")
-                                for f in exp.get('top_positive_play_factors', [])[:2]:
-                                    st.caption(f"🟢 `{f['feature']}`: +{f['contribution']:.2f}")
-                                for f in exp.get('top_negative_play_factors', [])[:2]:
-                                    st.caption(f"🔴 `{f['feature']}`: {f['contribution']:.2f}")
+                                    st.markdown("**FP Model Factors**")
+                                    for f in exp.get('top_positive_fp_factors', [])[:2]:
+                                        st.caption(f"🟢 `{f['feature']}`: +{f['contribution']:.1f}")
+                                    for f in exp.get('top_negative_fp_factors', [])[:2]:
+                                        st.caption(f"🔴 `{f['feature']}`: {f['contribution']:.1f}")
+                                        
+                                    st.markdown("**P(play) Factors**")
+                                    for f in exp.get('top_positive_play_factors', [])[:2]:
+                                        st.caption(f"🟢 `{f['feature']}`: +{f['contribution']:.2f}")
+                                    for f in exp.get('top_negative_play_factors', [])[:2]:
+                                        st.caption(f"🔴 `{f['feature']}`: {f['contribution']:.2f}")
+
                 
                 st.markdown('</div>', unsafe_allow_html=True)
                 

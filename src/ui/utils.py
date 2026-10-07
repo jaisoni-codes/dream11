@@ -17,7 +17,12 @@ def load_data():
     dels_df = pd.read_parquet('data/processed/deliveries.parquet')
     return pms_df, feats_df, dels_df
 
-def run_prediction(target_date, team_a, team_b, explain=True):
+@st.cache_resource
+def load_genai():
+    from src.inference.genai_explainer import GroundedGenAIExplainer
+    return GroundedGenAIExplainer()
+
+def run_prediction(target_date, team_a, team_b, explain=True, use_genai=False):
     pipeline = load_pipeline()
     pms_df, feats_df, dels_df = load_data()
     
@@ -25,9 +30,19 @@ def run_prediction(target_date, team_a, team_b, explain=True):
     pool, dream_team, latencies = pipeline.predict(
         target_date, team_a, team_b, pms_df, feats_df, explain=explain
     )
+    
+    if explain and use_genai:
+        genai_layer = load_genai()
+        genai_texts, genai_lat = genai_layer.explain(dream_team, dream_team.get('explanations', []))
+        if genai_texts:
+            dream_team['genai_explanations'] = genai_texts
+        latencies['genai_explanation'] = genai_lat
+        
     ui_overhead = (time.time() - t0) - latencies['total_inference']
     if 'shap_explanation' in latencies:
         ui_overhead -= latencies['shap_explanation']
+    if 'genai_explanation' in latencies:
+        ui_overhead -= latencies['genai_explanation']
         
     latencies['ui_overhead'] = max(0, ui_overhead)
     return pool, dream_team, latencies
